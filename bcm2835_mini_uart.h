@@ -71,6 +71,6 @@
 
 /* AUX_MU_STAT_REG */
 #define IS_TRANSMIT_FIFO_FULL(x) ( ! (x & 0x10) )
-#define IS_RECEIVE_FIFO_FULL(x) ( ( (x >> 16) & 0xF) <= 8)
+#define IS_RECEIVE_FIFO_FULL(x) ( ( (x >> 16) & 0xF) > 8)
 
 #endif /* _BCM2835_MINI_UART_H */
