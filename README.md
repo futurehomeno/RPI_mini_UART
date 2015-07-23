@@ -12,17 +12,23 @@ http://brevera.in/blog/software/mini-uart-driver-for-raspberry-pi/
 
 `uname -r`
 
-* Then clone the linux source (you can just we the source, but the one buldled with debian system doesn't seem to work) corresponding to your kernel version
+* Then download the linux source (you can just apt-get the source, but the one buldled with debian system doesn't seem to work) corresponding to your kernel version
 
-`https://github.com/raspberrypi/linux/archive/rpi-3.18.y.zip`
+```
+cd /usr/src
+wget https://github.com/raspberrypi/linux/archive/rpi-3.18.y.zip
+```
 
 Then unzip it:
 
-`unzip rpi-3.18.y -d linux`
+```
+unzip rpi-3.18.y
+mv linux-rpi-3.18.y linux
+```
 
 You might even have to upgrade gcc because some gcc version are flagged dangerous for compilations.
 
-* Now create a symlink of the clone linux source
+* Now create a symlink of the linux source
 
 `ln -s /usr/src/linux /lib/modules/3.18.14+/build`
 
@@ -42,9 +48,9 @@ It can be found in:
 
 The kernel version I am working on is `3.18.14+` so my file would be:
 
-`https://raw.githubusercontent.com/raspberrypi/firmware/70b05985cf2b2b893bc6e55b12794f32857a78dd/extra/Module.symvers`
+`wget https://raw.githubusercontent.com/raspberrypi/firmware/70b05985cf2b2b893bc6e55b12794f32857a78dd/extra/Module.symvers`
 
-You can look through the commit history and decide which commit has you file.
+You can look through the commit history and decide which commit has your file.
 
 * Run `depmod -a`
 
