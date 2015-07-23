@@ -14,11 +14,11 @@ http://brevera.in/blog/software/mini-uart-driver-for-raspberry-pi/
 
 * Then clone the linux source (you can just we the source, but the one buldled with debian system doesn't seem to work) corresponding to your kernel version
 
-`git clone https://github.com/raspberrypi/linux.git`
+`https://github.com/raspberrypi/linux/archive/rpi-3.18.y.zip`
 
-Then checkout the branch that corresponds to your linux version:
+Then unzip it:
 
-`git checkout rpi-3.18.y`
+`unzip rpi-3.18.y -d linux`
 
 You might even have to upgrade gcc because some gcc version are flagged dangerous for compilations.
 
