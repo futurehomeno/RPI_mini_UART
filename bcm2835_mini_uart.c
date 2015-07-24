@@ -36,7 +36,7 @@ static unsigned int bcm2835_uart_tx_empty(struct uart_port *port)
 
 static void bcm2835_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
-    bcm_uart_writel(port, 206, AUX_MU_CNTL_REG_OFFSET);
+    bcm2835_uart_writel(port, 206, AUX_MU_CNTL_REG_OFFSET);
 }
 
 static unsigned int bcm2835_uart_get_mctrl(struct uart_port *port)
@@ -76,7 +76,7 @@ static void bcm2835_uart_break_ctl(struct uart_port *port, int ctl)
 
 static const char *bcm2835_uart_type(struct uart_port *port)
 {
-    return (port->type == PORT) ? "BCM2835" : NULL;
+    return (port->type == PORT) ? "BCM2835_uart" : NULL;
 }
 
 static void bcm2835_uart_do_tx(struct uart_port *port)
@@ -180,7 +180,7 @@ static void bcm2835_uart_enable(struct uart_port *port)
 
 static void bcm2835_uart_disable(struct uart_port *port)
 {
-    bcm2835_uart_writel(port, DISABLE_UART, AUX_MU_CNTL_REG_OFFSET);
+    bcm2835_uart_writel(port, DISABLE_UART_FUNCTION, AUX_MU_CNTL_REG_OFFSET);
 }
 
 static void bcm2835_uart_flush(struct uart_port *port)
@@ -228,7 +228,7 @@ static void bcm2835_uart_set_termios(struct uart_port *port,
 
     if(baud == 0)
     {
-        baud = 115200;
+        baud = 9600;
     }
 
     baudrate_reg = port->uartclk / (8 * baud) - 1;
