@@ -233,7 +233,7 @@ static void bcm2835_uart_set_termios(struct uart_port *port,
 
     baudrate_reg = port->uartclk / (8 * baud) - 1;
 
-    bcm2835_uart_writel(port, ENABLE_8BIT(0x0), AUX_MU_LCR_REG_OFFSET);
+    bcm2835_uart_writel(port, ENABLE_8BIT, AUX_MU_LCR_REG_OFFSET);
     bcm2835_uart_writel(port, baudrate_reg, AUX_MU_BAUD_REG_OFFSET);
 
     bcm2835_uart_enable(port);
