@@ -43,9 +43,8 @@ static unsigned int bcm2835_uart_get_mctrl(struct uart_port *port)
 {
     int mctrl = 0, val;
     val = bcm2835_uart_readl(port, AUX_MU_STAT_REG_OFFSET);
-    if(!IS_TRANSMIT_FIFO_FULL(val)) {
+    if(!IS_TRANSMIT_FIFO_FULL(val))
         mctrl |= TIOCM_CTS;
-    }
     return mctrl;
 }
 
@@ -214,8 +213,8 @@ static void bcm2835_uart_shutdown(struct uart_port *port)
 }
 
 static void bcm2835_uart_set_termios(struct uart_port *port,
-                 struct ktermios *new_termios,
-                 struct ktermios *old_termios)
+                 struct ktermios *new,
+                 struct ktermios *old)
 {
     unsigned long flags;
     unsigned int baud, baudrate_reg;
@@ -225,7 +224,7 @@ static void bcm2835_uart_set_termios(struct uart_port *port,
     bcm2835_uart_disable(port);
     bcm2835_uart_flush(port);
 
-    baud = tty_termios_baud_rate(new_termios);
+    baud = tty_termios_baud_rate(new);
 
     if(baud == 0)
     {
@@ -309,30 +308,6 @@ static struct uart_ops bcm2835_uart_ops = {
     .verify_port    = bcm2835_uart_verify_port,
 };
 
-static void bcm2835_console_write(struct console *co, const char *s, unsigned int count)
-{
-    printk(KERN_INFO "Writing via console");
-}
-
-static int __init bcm2835_console_setup(struct console *co, char *options)
-{
-    printk(KERN_INFO "Setting up console");
-    return -ENODEV;
-}
-
-static struct uart_driver bcm2835_uart_driver;
-static struct console bcm2835_uart_console = {
-    .name       = "ttyS",
-    .write      = bcm2835_console_write,
-    .device     = uart_console_device,
-    .setup      = bcm2835_console_setup,
-    .flags      = CON_PRINTBUFFER,
-    .index      = -1,
-    .data       = &bcm2835_uart_driver,
-};
-
-#define BCM2835_UART_CONSOLE (&bcm2835_uart_console)
-
 static struct uart_driver bcm2835_uart_driver = {
     .owner          = THIS_MODULE,
     .driver_name    = "ttyS",
@@ -340,7 +315,6 @@ static struct uart_driver bcm2835_uart_driver = {
     .major          = 205,
     .minor          = 65,
     .nr             = MAX_PORTS,
-    .cons           = BCM2835_UART_CONSOLE
 };
 
 static int bcm2835_uart_probe(struct platform_device *pdev)
