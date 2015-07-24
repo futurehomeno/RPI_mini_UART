@@ -56,9 +56,9 @@ You can look through the commit history and decide which commit has your file.
 
 ### Making the module
 
-* Checkout the repo
+* Clone this repo
 
 ```
-git checkout https://github.com/arunpoudel/RPI_mini_UART.git
+git clone https://github.com/arunpoudel/RPI_mini_UART.git
 make
 ```

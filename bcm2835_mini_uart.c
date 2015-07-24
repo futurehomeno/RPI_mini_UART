@@ -36,7 +36,7 @@ static unsigned int bcm2835_uart_tx_empty(struct uart_port *port)
 
 static void bcm2835_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
-
+    bcm_uart_writel(port, 206, AUX_MU_CNTL_REG_OFFSET);
 }
 
 static unsigned int bcm2835_uart_get_mctrl(struct uart_port *port)
@@ -55,11 +55,8 @@ static void bcm2835_uart_stop_tx(struct uart_port *port)
 
 static void bcm2835_uart_start_tx(struct uart_port *port)
 {
-    int val;
-    val = bcm2835_uart_readl(port, AUX_MU_IER_REG_OFFSET);
-    bcm2835_uart_writel(port, ENABLE_RECEIVE_INTERRUPT(ENABLE_TRANSMIT_INTERRUPT(val)), AUX_MU_IER_REG_OFFSET);
-    val = bcm2835_uart_readl(port, AUX_MU_LCR_REG_OFFSET);
-    bcm2835_uart_writel(port, ENABLE_8BIT(val), AUX_MU_LCR_REG_OFFSET);
+    bcm2835_uart_writel(port, ENABLE_INTERRUPT, AUX_MU_IER_REG_OFFSET);
+    bcm2835_uart_writel(port, ENABLE_8BIT, AUX_MU_LCR_REG_OFFSET);
 }
 
 static void bcm2835_uart_stop_rx(struct uart_port *port)
@@ -79,7 +76,7 @@ static void bcm2835_uart_break_ctl(struct uart_port *port, int ctl)
 
 static const char *bcm2835_uart_type(struct uart_port *port)
 {
-    return (port->type == PORT) ? "BCM2835_uart" : NULL;
+    return (port->type == PORT) ? "BCM2835" : NULL;
 }
 
 static void bcm2835_uart_do_tx(struct uart_port *port)
@@ -101,7 +98,7 @@ static void bcm2835_uart_do_tx(struct uart_port *port)
 
     xmit = &port->state->xmit;
     if (uart_circ_empty(xmit))
-        goto txq_empty;
+        goto txqueue_empty;
 
     val = bcm2835_uart_readl(port, AUX_MU_STAT_REG_OFFSET);
     val = (val & (0xF<<23)) >> 23;
@@ -122,12 +119,11 @@ static void bcm2835_uart_do_tx(struct uart_port *port)
         uart_write_wakeup(port);
 
     if (uart_circ_empty(xmit))
-        goto txq_empty;
+        goto txqueue_empty;
     return;
 
-txq_empty:
-    val = bcm2835_uart_readl(port, AUX_MU_IER_REG_OFFSET);
-    bcm2835_uart_writel(port, ENABLE_TRANSMIT_INTERRUPT(val), AUX_MU_IER_REG_OFFSET);
+txqueue_empty:
+    bcm2835_uart_writel(port, DISABLE_INTERRUPT, AUX_MU_IER_REG_OFFSET);
     return;
 }
 
@@ -179,9 +175,7 @@ static irqreturn_t bcm2835_uart_interrupt(int irq, void *dev_id)
 
 static void bcm2835_uart_enable(struct uart_port *port)
 {
-    int val;
-    val = bcm2835_uart_readl(port, AUX_MU_CNTL_REG_OFFSET);
-    bcm2835_uart_writel(port, ENABLE_TRANSMITTER(ENABLE_RECEIVER(ENABLE_AUTO_RECEIVE(val))), AUX_MU_CNTL_REG_OFFSET);
+    bcm2835_uart_writel(port, ENABLE_UART_FUNCTION, AUX_MU_CNTL_REG_OFFSET);
 }
 
 static void bcm2835_uart_disable(struct uart_port *port)
@@ -196,7 +190,7 @@ static void bcm2835_uart_flush(struct uart_port *port)
 
 static int bcm2835_uart_startup(struct uart_port *port)
 {
-    int ret, val;
+    int ret;
     /* mask all irq and flush port */
     bcm2835_uart_disable(port);
     bcm2835_uart_writel(port, 0, AUX_MU_IER_REG_OFFSET);
@@ -206,8 +200,7 @@ static int bcm2835_uart_startup(struct uart_port *port)
               bcm2835_uart_type(port), port);
     if (ret)
         return ret;
-    val = bcm2835_uart_readl(port, AUX_MU_IER_REG_OFFSET);
-    bcm2835_uart_writel(port, DISABLE_RECEIVE_INTERRUPT(val) , AUX_MU_IER_REG_OFFSET);
+    bcm2835_uart_writel(port, ENABLE_INTERRUPT , AUX_MU_IER_REG_OFFSET);
     bcm2835_uart_enable(port);
     return 0;
 }
@@ -341,7 +334,7 @@ static int bcm2835_uart_probe(struct platform_device *pdev)
     port = &ports[pdev->id];
     memset(port, 0, sizeof(*port));
     port->iotype = UPIO_MEM;
-    port->mapbase = AUX_BASEADDR + AUX_MU_IO_OFFSET + AUX_MU_IO_REG_OFFSET;
+    port->mapbase = AUX_BASEADDR + AUX_MU_IO_OFFSET;
 
     port->irq = IRQ;
     port->ops = &bcm2835_uart_ops;
