@@ -320,11 +320,21 @@ static int __init bcm2835_console_setup(struct console *co, char *options)
     return -ENODEV;
 }
 
+/*
+* Rip off from serial.c
+ */
+struct tty_driver *bcm2835_console_device(struct console *co, int *index)
+{
+         struct uart_driver *p = co->data;
+         *index = co->index;
+         return p->tty_driver;
+}
+
 static struct uart_driver bcm2835_uart_driver;
 static struct console bcm2835_uart_console = {
     .name       = "ttyS",
     .write      = bcm2835_console_write,
-    .device     = uart_console_device,
+    .device     = bcm2835_console_device,
     .setup      = bcm2835_console_setup,
     .flags      = CON_PRINTBUFFER,
     .index      = -1,

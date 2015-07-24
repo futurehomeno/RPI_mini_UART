@@ -2,7 +2,7 @@
 #define _BCM2835_MINI_UART_H
 
 #define AUTHOR "Future Home AS <arun@futurehome.no>"
-#define DESCRIPTION "BCM285 Mini UArt Driver"
+#define DESCRIPTION "BCM2835 Mini UArt Driver"
 #define LICENSE "GPL"
 
 #define CLOCK 250000000
