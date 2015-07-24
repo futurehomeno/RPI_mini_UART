@@ -46,7 +46,6 @@
 /* AUX_MX_IIR_REG */
 #define IS_TRANSMIT_INTERRUPT(x) (x & 0x2)
 #define IS_RECEIVE_INTERRUPT(x) (x & 0x4)
-#define DISABLE_UART 0x0
 #define FLUSH_UART 0xC6
 
 /* AUX_MU_LCR_REH */
@@ -63,9 +62,9 @@
 #define IS_RECEIVER_ENABLED(x) (x & 0x1)
 #define IS_TRANSMITTER_ENABLED(x) (x & 0x2)
 #define ENABLE_UART_FUNCTION 0x3
+#define DISABLE_UART_FUNCTION 0x0
 
 /* AUX_MU_STAT_REG */
-#define IS_TRANSMIT_FIFO_FULL(x) ( ! (x & 0x10) )
-#define IS_RECEIVE_FIFO_FULL(x) ( ( (x >> 16) & 0xF) > 8)
+#define IS_TRANSMIT_FIFO_FULL(x) ( x & 0x20 )
 
 #endif /* _BCM2835_MINI_UART_H */
