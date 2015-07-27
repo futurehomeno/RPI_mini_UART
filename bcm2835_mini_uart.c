@@ -163,7 +163,6 @@ static irqreturn_t bcm2835_uart_interrupt(int irq, void *dev_id)
     spin_lock(&port->lock);
 
     irqstat = bcm2835_uart_readl(port, AUX_MU_IIR_REG_OFFSET);
-    printk(KERN_INFO "Got irqstat: %d\n", irqstat);
     if(IS_RECEIVE_INTERRUPT(irqstat))
         bcm2835_uart_do_rx(port);
     if(IS_TRANSMIT_INTERRUPT(irqstat))
