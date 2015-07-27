@@ -308,44 +308,13 @@ static struct uart_ops bcm2835_uart_ops = {
     .verify_port    = bcm2835_uart_verify_port,
 };
 
-static void bcm2835_console_write(struct console *co, const char *s, unsigned int count)
-{
-    printk(KERN_INFO "Console Write\n");
-}
-
-static int __init bcm2835_console_setup(struct console *co, char *options)
-{
-    printk(KERN_INFO "Console Setup\n");
-    return 0;
-}
-
-struct tty_driver *bcm2835_console_device(struct console *co, int *index)
-{
-    struct uart_driver *p = co->data;
-    *index = co->index;
-    return p->tty_driver;
-}
-
-static struct uart_driver bcm2835_uart_driver;
-
-static struct console bcm2835_console = {
-    .name           = "ttyS",
-    .write          = bcm2835_console_write,
-    .device         = bcm2835_console_device,
-    .setup          = bcm2835_console_setup,
-    .flags          = CON_PRINTBUFFER,
-    .index          = -1,
-    .data           = &bcm2835_uart_driver,
-};
-
 static struct uart_driver bcm2835_uart_driver = {
     .owner          = THIS_MODULE,
     .driver_name    = "ttyS",
     .dev_name       = "ttyS",
     .major          = 205,
     .minor          = 65,
-    .nr             = MAX_PORTS,
-    .cons           = &bcm2835_console
+    .nr             = MAX_PORTS
 };
 
 static int bcm2835_uart_probe(struct platform_device *pdev)
