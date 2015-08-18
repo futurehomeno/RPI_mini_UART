@@ -29,9 +29,9 @@ static inline void bcm2835_uart_writel(struct uart_port *port, unsigned int valu
 
 static unsigned int bcm2835_uart_tx_empty(struct uart_port *port)
 {
-    unsigned int val;
-    val = bcm2835_uart_readl(port, AUX_MU_LSR_REG_OFFSET);
-    return IS_TRANSMITTER_EMPTY(val);
+    unsigned int lsr_reg_status;
+    lsr_reg_status = bcm2835_uart_readl(port, AUX_MU_LSR_REG_OFFSET);
+    return IS_TRANSMITTER_EMPTY(lsr_reg_status);
 }
 
 static void bcm2835_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
@@ -41,9 +41,9 @@ static void bcm2835_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 
 static unsigned int bcm2835_uart_get_mctrl(struct uart_port *port)
 {
-    int mctrl = 0, val;
-    val = bcm2835_uart_readl(port, AUX_MU_STAT_REG_OFFSET);
-    if(!IS_TRANSMIT_FIFO_FULL(val))
+    int mctrl = 0, stat_reg_status;
+    stat_reg_status = bcm2835_uart_readl(port, AUX_MU_STAT_REG_OFFSET);
+    if(!IS_TRANSMIT_FIFO_FULL(stat_reg_status))
         mctrl |= TIOCM_CTS;
     return mctrl;
 }
@@ -82,7 +82,7 @@ static const char *bcm2835_uart_type(struct uart_port *port)
 static void bcm2835_uart_do_tx(struct uart_port *port)
 {
     struct circ_buf *xmit;
-    unsigned int val, max_count;
+    unsigned int stat_reg_status, max_count;
 
     if (port->x_char) {
         bcm2835_uart_writel(port, port->x_char, AUX_MU_IO_REG_OFFSET);
@@ -100,9 +100,9 @@ static void bcm2835_uart_do_tx(struct uart_port *port)
     if (uart_circ_empty(xmit))
         goto txqueue_empty;
 
-    val = bcm2835_uart_readl(port, AUX_MU_STAT_REG_OFFSET);
-    val = (val & (0xF<<23)) >> 23;
-    max_count = port->fifosize - val;
+    stat_reg_status = bcm2835_uart_readl(port, AUX_MU_STAT_REG_OFFSET);
+    stat_reg_status = (stat_reg_status & (0xF<<23)) >> 23;
+    max_count = port->fifosize - stat_reg_status;
 
     while (max_count--) {
         unsigned int c;
