@@ -13,6 +13,8 @@
 #include <linux/io.h>
 #include <linux/of.h>
 
+#include <mach/platform.h>
+
 #include "bcm2835_mini_uart.h"
 
 static struct uart_port ports[MAX_PORTS];

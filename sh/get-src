@@ -1,0 +1,20 @@
+#!/bin/sh
+Kernel='4.1.12+'
+KernelDir="/lib/modules/$Kernel/build"
+Branch='rpi-4.1.y'
+SymVerCommit='master'
+
+git clone --depth 1 --branch "$Branch" https://github.com/raspberrypi/linux.git
+sudo rm -rf "$KernelDir"
+sudo mv linux "$KernelDir"
+cd $KernelDir
+sudo modprobe configs
+
+make mrproper
+gzip -dc /proc/config.gz > .config
+make modules_prepare
+
+wget "https://raw.githubusercontent.com/raspberrypi/firmware/$SymVerCommit/extra/Module.symvers"
+
+sudo depmod -a
+
